@@ -1,9 +1,17 @@
-import React, { useState } from 'react'
-import { collection, doc, getDoc, getDocs, query, serverTimestamp, setDoc, updateDoc, where } from 'firebase/firestore'
+import React, { useState,useContext } from 'react'
+import { 
+  collection, 
+  doc, 
+  getDoc, 
+  getDocs, 
+  query, 
+  serverTimestamp, 
+  setDoc, 
+  updateDoc, 
+  where 
+} from 'firebase/firestore'
 import { db } from '../firebase'
-import { useContext } from 'react'
 import { AuthContext } from '../context/AuthContext'
-
 const Search = () => {
   const [userName, setUserName] = useState("")
   const [user, setUser] = useState(null)
@@ -32,7 +40,7 @@ const Search = () => {
   };
 
   const handleSelect = async () => {
-    //check is the group or chat collection exists or not..if not create new one
+    //check if the group or chat collection exists or not..if not create new one
     const combinedId =
       currentUser.uid > user.uid
         ? currentUser.uid + user.uid
@@ -43,35 +51,32 @@ const Search = () => {
 
       if (!res.exists()) {
         // create chat in chat collection
-        await setDoc(doc(db, "chats", combinedId), { messages: {} })
+        await setDoc(doc(db, "chats", combinedId), { messages: [] });
 
-        //create user chat
+        //create user chat for currentuser
         await updateDoc(doc(db, "userChats", currentUser.uid), {
           [combinedId + ".userInfo"]: {
             uid: user.uid,
             displayName: user.displayName,
             photoURL: user.photoURL
           },
-          [combinedId + ".date"]: serverTimestamp()
+          [combinedId + ".date"]: serverTimestamp(),
         });
-
+        //create user chat for user
         await updateDoc(doc(db, "userChats", user.uid), {
           [combinedId + ".userInfo"]: {
             uid: currentUser.uid,
             displayName: currentUser.displayName,
             photoURL: currentUser.photoURL
           },
-          [combinedId + ".date"]: serverTimestamp()
+          [combinedId + ".date"]: serverTimestamp(),
         });
-
       }
-    } catch (error) {}
+    } catch (error) { }
 
     setUser(null)
     setUserName("")
-    //create user chats
   };
-
 
   return (
     <div className='search'>
@@ -94,7 +99,7 @@ const Search = () => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
 export default Search;
