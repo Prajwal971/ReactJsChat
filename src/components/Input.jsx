@@ -79,6 +79,7 @@ const Input = () => {
         type="text"
         placeholder="Type Something"
         onChange={e => setText(e.target.value)}
+        value={text}
       />
       <div className="send">
         <img src={Attach} alt="" />
